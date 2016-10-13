@@ -22,6 +22,7 @@ Lab work for the Introduction to Computer Science class in New York University, 
 
 
 ## Homework
+
 - [Battleship: Rip current edition](https://github.com/lzapolskas/intro_to_cs/tree/master/battleships) An implementation of Battleships where the ships are thrown about by the current, making hitting them so much harder.
 - [Monopoly](https://github.com/lzapolskas/intro_to_cs/tree/master/monopoly) Text-based Monopoly clone. While the board itself is not rendered in glorious ASCII, the core functionality, that is movement, buying properties, rent and the like are in place.
 - **Final project** Currently unknown
