@@ -1,8 +1,7 @@
 """Exercise 1.2: Number machines."""
-from functools import reduce
 
 
-def multiplier(nums: list) -> list:
+def multiplier(nums: list)  :
     """Given a list, return a new list with each element duped."""
     final = []
     for item in nums:
@@ -19,7 +18,7 @@ def consumer(nums: list) -> list:
 
 def blender(nums: list) -> list:
     """Return the sum of all numbers as a list."""
-    final = [reduce(lambda x, y: x + y, nums)]
+    final = [sum(nums)]
     return final
 
 
