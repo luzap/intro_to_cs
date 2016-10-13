@@ -1,4 +1,4 @@
-# Exercise 3: List interactions
+"""Exercise 3: List interactions"""
 
 
 def remove_whitespace(lst):

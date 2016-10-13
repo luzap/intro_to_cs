@@ -1,4 +1,4 @@
-# Exercise 4: Dice game
+"""Exercise 4: Dice game."""
 import random
 
 outcomes = ['one', 'two', 'three', 'four', 'five', 'six']

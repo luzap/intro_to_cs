@@ -1,4 +1,4 @@
-"""1.2 Fun with string output."""
+"""Exercise 1.2: Fun with string output."""
 
 listOfLists = [['a', 'b', 'c'],
                ['d', 'e', 'f'],

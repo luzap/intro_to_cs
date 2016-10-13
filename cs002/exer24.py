@@ -1,4 +1,4 @@
-# Exercise 2.4: Interactive addition
+"""Exercise 2.4: Interactive addition"""
 
 num_1 = input("Enter the first number: ").rstrip().lstrip()
 num_2 = input("Enter the second number: ").rstrip().lstrip()

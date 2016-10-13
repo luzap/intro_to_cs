@@ -1,4 +1,4 @@
-# Exercise 1: Integers
+"""Exercise 1: Integers."""
 
 # Addition
 sum = 0

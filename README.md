@@ -3,22 +3,22 @@ Lab work for the Introduction to Computer Science class in New York University, 
 
 
 ## Syllabus
-| Week  | Topics covered               |
-|-------|------------------------------|
-|  1    | Programming basics           |
-|  2    | Printing; for-loops          |
-|  3    | Control statements           |
-|  4    | Boolean algebra; while loops |
-|  5    | File I/O                     |
-|  6    | Functions                    |
-|  7    | Review & midterm             |
-|  8    | Recursion                    |
-|  9    | Object oriented programming  |
-| 10    | Advanced OOP                 |
-| 11    | Processing                   |
-| 12    | Python with SQL              |
-| 13    | Web servers & CGI            |
-| 14    | Review & final               | 
+| Week    | Topics covered                 |
+|:-------:|:------------------------------:|
+|  1      | Programming basics             |
+|  2      | Printing; for-loops            |
+|  3      | Control statements             |
+|  4      | Boolean algebra; while loops   |
+|  5      | File I/O                       |
+|  6      | Functions                      |
+|  7      | Review & midterm               |
+|  8      | Recursion                      |
+|  9      | Object oriented programming    |
+| 10      | Advanced OOP                   |
+| 11      | Processing                     |
+| 12      | Python with SQL                |
+| 13      | Web servers & CGI              |
+| 14      | Review & final                 | 
 
 
 ## Homework

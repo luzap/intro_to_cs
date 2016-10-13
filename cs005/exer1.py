@@ -1,4 +1,4 @@
-"""1.1 For-loop transformation."""
+"""Exercise 1.1: For-loop transformation."""
 myString = "The quick brOwn fOx jumped over thE lAzy dog"
 
 vowels = ['a', 'e', 'i', 'o', 'u']

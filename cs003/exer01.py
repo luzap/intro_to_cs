@@ -1,4 +1,4 @@
-# Exercise 1: Pony Stash Toek
+"""Exercise 1: Pony Stash Token."""
 x = "pony stash token"
 
 print("First letter:", x[0])

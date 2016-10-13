@@ -1,4 +1,4 @@
-# Exercise 2.2: String rotation
+"""Exercise 2.2: String rotation."""
 import timeit
 
 shift = 3

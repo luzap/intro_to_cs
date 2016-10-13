@@ -1,4 +1,4 @@
-# Exercise 2: Computer Names
+"""Exercise 2: Computer Names."""
 
 full_name = input("Please input your full name: ")
 full_name = full_name.lower().split(" ")

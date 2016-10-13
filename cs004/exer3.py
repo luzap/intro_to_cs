@@ -1,4 +1,4 @@
-# Exercise 3: Lists
+"""Exercise 3: Lists."""
 import random
 
 # Addition

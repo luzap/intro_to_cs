@@ -1,4 +1,4 @@
-# Exercise 2.3: Higher order functions
+"""Exercise 2.3: Higher order functions."""
 from functools import reduce
 
 # Integers

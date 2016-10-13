@@ -1,4 +1,4 @@
-"""1.4 Random words."""
+"""Exercise 1.4: Random words."""
 import random
 
 rand_words = []

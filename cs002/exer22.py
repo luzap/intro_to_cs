@@ -1,4 +1,4 @@
-# Exercise 2.2: String Report
+"""Exercise 2.2: String Report."""
 string = "The quick brown fox jumps over the lazy dog"
 
 print(string.lower())

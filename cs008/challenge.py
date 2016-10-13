@@ -1,3 +1,4 @@
+"""In-class challenge."""
 phone_dir = {}
 
 while True:

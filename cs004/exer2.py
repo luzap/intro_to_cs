@@ -1,4 +1,4 @@
-# Exercise 2: Strings
+"""Exercise 2: Strings."""
 string1 = 'The rain in Spain falls mainly on the plain'
 print("Original phrase:", string1)
 

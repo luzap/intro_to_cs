@@ -1,4 +1,4 @@
-"""1.3 Sub-list products."""
+"""Exercise 1.3: Sub-list products."""
 import random
 
 list_of_lists = [[1, 2, 3],
