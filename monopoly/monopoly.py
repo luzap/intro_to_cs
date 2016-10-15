@@ -20,6 +20,7 @@ types_of_properties = enumerate(["street", "railroad", "utility"], start=1)
 
 
 def get_board(csv_file: str) -> list:
+    """Read the CSV file containing the board."""
     with open(csv_file, "r") as fhandle:
         headers = fhandle.readline().strip().split(",")
         properties = []
@@ -42,6 +43,7 @@ def get_board(csv_file: str) -> list:
 
 
 def get_players(n: int) -> list:
+    """Generate n players with predefined starting conditions."""
     # Pieces from the traditional Monopoly, as per their wiki
     pieces = ["shoe", "hat", "car", "dog", "thimble",
               "battleship", "wheelbarrow", "cat"]
@@ -56,6 +58,7 @@ def get_players(n: int) -> list:
 
 
 def print_board(board: list, players: list) -> None:
+    """Print the current state of the board."""
     for entry in board:
         print(entry["name"])
         if entry["owner"] not in ["", "bank"]:
@@ -69,19 +72,28 @@ def print_board(board: list, players: list) -> None:
 
 
 def print_player(player: dict, board: list) -> None:
+    """Print the information about an individual player."""
     print("Player", player['name'])
-    print("\tWallet", player['balance'])
+    print("\tWallet:", player['balance'])
+    print("\tPosition:", player['position'])
     properties = []
     for item in board:
         if item['owner'] == player['name']:
             properties.append(item['name'])
     if len(properties):
-        print("Properties:")
-        print("\t" + "\n".join(properties))
+        print("\tProperties:")
+        print("\t\t" + "\n".join(properties))
 
 
-def move_player(player: dict, board: list) -> None:
-    pass
+def move_player(player: dict, board: list, dice_roll: int) -> None:
+    current_pos = 0
+    location = player['position']
+    for item in board:
+        if item['name'] == location:
+            current_pos = board.index(item)
+    final_pos = (current_pos + dice_roll) % len(board)
+    if final_pos <= current_pos:
+        player['balance'] -= board[0]['rent']
 
 
 def type_counter(player: dict, board: list, tile_type: int) -> int:
