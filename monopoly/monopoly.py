@@ -14,6 +14,7 @@ Implementation goals:
 """
 import random
 import time
+import argparse
 
 # Global variable to determine the type of the property without
 # hard-coding them in
@@ -122,16 +123,40 @@ def user_input(players_enum: list, turn: int) -> str:
     return data
 
 
-def gameloop():
+# TODO Convert this into something that would support heuristics
+def core_game(players: list, board: list, input_funct: object)-> None:
+    """Separate core mechanics from input."""
+    turn = 1
+    while not iswinner(players)[0]:
+        action = input_funct(names)
+
+
+def gameloop_main():
+    """Run the PVP playthrough"""
     players = get_players(int(input("How many players are playing? ")))
     names = enumerate([player['name'] for player in players], start=1)
     for num, name in names:
         print("Player {} has chosen the {}".format(num, name))
     board = get_board("monopoly.csv")
-    print(iswinner(players))
-    turn = 1
-    while not iswinner(players)[0]:
-        action = user_input(names)
+    core_game(players, board, user_input)
 
-if __name__ == '__main__':
-    gameloop()
+
+# TODO Don't forget verbose output
+def gameloop_heur():
+    """Run the heuristic playthrough."""
+    pass
+
+
+# Command line options
+parser = argparse.ArgumentParser()
+parser.add_argument('mode', type=str, choices=["heuristics", "pvp"],
+                    default="pvp",
+                    help="Run monopoly.py in heuristics or player vs player mode.")
+args = parser.parse_args()
+
+if args.mode == "heuristics":
+    raise NotImplemented("Hasn't been implemented yet'")
+elif args.mode == "pvp":
+    gameloop_main()
+else:
+    print("Your option either doesn't exist!")
