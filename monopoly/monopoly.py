@@ -2,8 +2,21 @@
 
 Author: Lukas Zapolskas
 NetID: lz1477
+
+This is a purely text-based Monopoly implementation, attempting to adhere
+to the rules of the original game as close as possible. 
+
+Implementation goals:
+- game loop
+- heuristics(?)
+-
+
 """
 import random
+
+# Global variable to determine the type of the property without
+# hard-coding them in
+types_of_properties = enumerate(["street", "railroad", "utility"], start=1)
 
 
 def get_board(csv_file: str) -> list:
@@ -56,7 +69,15 @@ def print_board(board: list, players: list) -> None:
 
 
 def print_player(player: dict, board: list) -> None:
-    pass
+    print("Player", player['name'])
+    print("\tWallet", player['balance'])
+    properties = []
+    for item in board:
+        if item['owner'] == player['name']:
+            properties.append(item['name'])
+    if len(properties):
+        print("Properties:")
+        print("\t" + "\n".join(properties))
 
 
 def move_player(player: dict, board: list) -> None:
@@ -67,4 +88,7 @@ def type_counter(player: dict, board: list, tile_type: int) -> int:
     pass
 
 if __name__ == '__main__':
-    print_board(get_board("monopoly.csv"), get_players(2))
+    players = get_players(2)
+    board = get_board("monopoly.csv")
+    print_board(board, players)
+    print_player(players[0], board)
