@@ -13,6 +13,7 @@ Implementation goals:
 
 """
 import random
+import time
 
 # Global variable to determine the type of the property without
 # hard-coding them in
@@ -45,12 +46,14 @@ def get_board(csv_file: str) -> list:
 def get_players(n: int) -> list:
     """Generate n players with predefined starting conditions."""
     # Pieces from the traditional Monopoly, as per their wiki
+    # TODO Add logic to make sure they do not repeat (noun parser? NLTK?)
     pieces = ["shoe", "hat", "car", "dog", "thimble",
               "battleship", "wheelbarrow", "cat"]
     players = []
     for player in range(n):
+        # The name should be a unique identifier, so padding ensures uniqueness
         players.append({
-            "name": random.choice(pieces),  # Randomly chosen element from list
+            "name": random.choice(pieces) + "_" + str(random.randint(1, 100)),
             "balance": 1500,
             "position": "Go"
         })
@@ -100,7 +103,7 @@ def type_counter(player: dict, board: list, tile_type: int) -> int:
     pass
 
 
-def iswinner(players: list) -> bool, str:
+def iswinner(players: list) -> (bool, str):
     """Determine whether there is a winner by checking the balances of all players."""
     broke = 0
     for player in players:
@@ -108,10 +111,27 @@ def iswinner(players: list) -> bool, str:
             broke += 1
         else:
             name = player['name']
-    return (broke == len(players) - 1), name
+    return (broke == (len(players) - 1)), name
+
+
+def user_input(players_enum: list, turn: int) -> str:
+    """Ask for user input and parse it down into options."""
+    data = input("Player {} [m: move; p: print info; q: quit]\n> ".format(
+        turn % len(players_enum)))
+    data = data.strip()[0]
+    return data
+
+
+def gameloop():
+    players = get_players(int(input("How many players are playing? ")))
+    names = enumerate([player['name'] for player in players], start=1)
+    for num, name in names:
+        print("Player {} has chosen the {}".format(num, name))
+    board = get_board("monopoly.csv")
+    print(iswinner(players))
+    turn = 1
+    while not iswinner(players)[0]:
+        action = user_input(names)
 
 if __name__ == '__main__':
-    players = get_players(2)
-    board = get_board("monopoly.csv")
-    print_board(board, players)
-    print_player(players[0], board)
+    gameloop()
