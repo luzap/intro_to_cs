@@ -126,6 +126,9 @@ def user_input(players_enum: list, turn: int) -> str:
 # TODO Convert this into something that would support heuristics
 def core_game(players: list, board: list, input_funct: object)-> None:
     """Separate core mechanics from input."""
+    names = enumerate([player['name'] for player in players], start=1)
+    for num, name in names:
+        print("Player {} has chosen the {}".format(num, name))
     turn = 1
     while not iswinner(players)[0]:
         action = input_funct(names)
@@ -134,9 +137,6 @@ def core_game(players: list, board: list, input_funct: object)-> None:
 def gameloop_main():
     """Run the PVP playthrough"""
     players = get_players(int(input("How many players are playing? ")))
-    names = enumerate([player['name'] for player in players], start=1)
-    for num, name in names:
-        print("Player {} has chosen the {}".format(num, name))
     board = get_board("monopoly.csv")
     core_game(players, board, user_input)
 
@@ -148,15 +148,14 @@ def gameloop_heur():
 
 
 # Command line options
-parser = argparse.ArgumentParser()
-parser.add_argument('mode', type=str, choices=["heuristics", "pvp"],
-                    default="pvp",
-                    help="Run monopoly.py in heuristics or player vs player mode.")
+parser = argparse.ArgumentParser(
+                    description="Start the game with varying gamemodes.")
+parser.add_argument('pvp', type=bool, default=True,
+                    help="Run monopoly.py in player vs player or \
+                     heuristics mode.")
 args = parser.parse_args()
 
-if args.mode == "heuristics":
-    raise NotImplemented("Hasn't been implemented yet'")
-elif args.mode == "pvp":
+if args.pvp:
     gameloop_main()
 else:
-    print("Your option either doesn't exist!")
+    raise NotImplementedError("The functions responsible for this are not yet implemented.")
