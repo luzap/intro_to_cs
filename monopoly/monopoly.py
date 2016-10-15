@@ -99,6 +99,17 @@ def move_player(player: dict, board: list, dice_roll: int) -> None:
 def type_counter(player: dict, board: list, tile_type: int) -> int:
     pass
 
+
+def iswinner(players: list) -> bool, str:
+    """Determine whether there is a winner by checking the balances of all players."""
+    broke = 0
+    for player in players:
+        if player['balance'] == 0:
+            broke += 1
+        else:
+            name = player['name']
+    return (broke == len(players) - 1), name
+
 if __name__ == '__main__':
     players = get_players(2)
     board = get_board("monopoly.csv")
