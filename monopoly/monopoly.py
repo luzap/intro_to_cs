@@ -8,8 +8,10 @@ to the rules of the original game as close as possible.
 
 Implementation goals:
 - game loop
-- heuristics(?)
--
+- purchase
+- heuristics
+    - optimal strategy of automatic purchase: ALL, NONE, RANDOM
+    - 
 
 """
 import random
@@ -36,6 +38,7 @@ def get_board(csv_file: str) -> list:
             properties.append(prop)
 
         # Conversion of string to integer types
+        # I suppose I could just write in the three entries, but this is more fun
         integer_entries = [item for item in list(properties[0].keys())
                            if item not in ["owner", "name"]]
         for prop in properties:
@@ -47,14 +50,11 @@ def get_board(csv_file: str) -> list:
 def get_players(n: int) -> list:
     """Generate n players with predefined starting conditions."""
     # Pieces from the traditional Monopoly, as per their wiki
-    # TODO Add logic to make sure they do not repeat (noun parser? NLTK?)
-    pieces = ["shoe", "hat", "car", "dog", "thimble",
-              "battleship", "wheelbarrow", "cat"]
     players = []
     for player in range(n):
         # The name should be a unique identifier, so padding ensures uniqueness
         players.append({
-            "name": random.choice(pieces) + "_" + str(random.randint(1, 100)),
+            "name": "Player_{}".format(player),
             "balance": 1500,
             "position": "Go"
         })
@@ -115,47 +115,49 @@ def iswinner(players: list) -> (bool, str):
     return (broke == (len(players) - 1)), name
 
 
-def user_input(players_enum: list, turn: int) -> str:
+def user_input(player: str, turn: int) -> str:
     """Ask for user input and parse it down into options."""
-    data = input("Player {} [m: move; p: print info; q: quit]\n> ".format(
-        turn % len(players_enum)))
+    data = input("{} [m: move; p: print info; q: quit]\n> ".format(player))
     data = data.strip()[0]
     return data
 
 
 # TODO Convert this into something that would support heuristics
-def core_game(players: list, board: list, input_funct: object)-> None:
-    """Separate core mechanics from input."""
-    names = enumerate([player['name'] for player in players], start=1)
-    for num, name in names:
-        print("Player {} has chosen the {}".format(num, name))
-    turn = 1
-    while not iswinner(players)[0]:
-        action = input_funct(names)
-
-
-def gameloop_main():
-    """Run the PVP playthrough"""
+def core_gameloop()-> None:
+    """Initial game loop which will then be abstracted to allow for computer input."""
     players = get_players(int(input("How many players are playing? ")))
     board = get_board("monopoly.csv")
-    core_game(players, board, user_input)
+    turn = 1
+    while not iswinner(players)[0]:
+        print("Turn", turn)
+        current_player = players[(turn - 1) % len(players)]
+        action = user_input(current_player['name'])
+        if action == 'm':
+            pass
+        elif action == 'p':
+            print_player(player, board)
+        elif action == 'q':
+            print("Sorry to see you leave so soon.")
+            break
+        else:
+            print("Sorry, didn't quite catch that. And you skipped your turn!")
+    else:
+        print("The winner is", iswinner(players)[1])
 
 
-# TODO Don't forget verbose output
-def gameloop_heur():
-    """Run the heuristic playthrough."""
-    pass
+# # Command line options
+# parser = argparse.ArgumentParser(
+#     description="Start the game with varying gamemodes.")
+# parser.add_argument('pvp', type=bool, default=True, re
+#                     help="Run monopoly.py in player vs player or \
+#                      heuristics mode.")
+# args = parser.parse_args()
 
+# if args.pvp or (args.pvp is None):
+#     gameloop_main()
+# else:
+#     raise NotImplementedError(
+#         "The functions responsible for this are not yet implemented.")
 
-# Command line options
-parser = argparse.ArgumentParser(
-                    description="Start the game with varying gamemodes.")
-parser.add_argument('pvp', type=bool, default=True,
-                    help="Run monopoly.py in player vs player or \
-                     heuristics mode.")
-args = parser.parse_args()
-
-if args.pvp:
-    gameloop_main()
-else:
-    raise NotImplementedError("The functions responsible for this are not yet implemented.")
+if __name__ == "__main__":
+    core_gameloop()
