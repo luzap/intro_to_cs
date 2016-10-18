@@ -54,7 +54,7 @@ def get_players(n: int) -> list:
     for player in range(n):
         # The name should be a unique identifier, so padding ensures uniqueness
         players.append({
-            "name": "Player_{}".format(player),
+            "name": "Player {}".format(player + 1),
             "balance": 1500,
             "position": "Go"
         })
@@ -89,15 +89,15 @@ def print_player(player: dict, board: list) -> None:
         print("\t\t" + "\n".join(properties))
 
 
-def move_player(player: dict, board: list, dice_roll: int) -> None:
+def move_player(players: list, turn: int, board: list, dice_roll: int) -> None:
     current_pos = 0
-    location = player['position']
+    location = players[turn % len(players)]['position']
     for item in board:
         if item['name'] == location:
             current_pos = board.index(item)
     final_pos = (current_pos + dice_roll) % len(board)
-    if final_pos <= current_pos:
-        player['balance'] -= board[0]['rent']
+    print(board[final_pos]['name'])
+    players[turn % len(players)]['position'] = board[final_pos]['name']
 
 
 def type_counter(player: dict, board: list, tile_type: int) -> int:
@@ -115,10 +115,11 @@ def iswinner(players: list) -> (bool, str):
     return (broke == (len(players) - 1)), name
 
 
-def user_input(player: str, turn: int) -> str:
+def user_input(player: str) -> str:
     """Ask for user input and parse it down into options."""
     data = input("{} [m: move; p: print info; q: quit]\n> ".format(player))
-    data = data.strip()[0]
+    print(data)
+    data = data.strip()[0] if len(data) != 0 else "p"
     return data
 
 
@@ -127,15 +128,18 @@ def core_gameloop()-> None:
     """Initial game loop which will then be abstracted to allow for computer input."""
     players = get_players(int(input("How many players are playing? ")))
     board = get_board("monopoly.csv")
-    turn = 1
+    turn = 0
+    print("Note that the default option is print player stats.")
     while not iswinner(players)[0]:
-        print("Turn", turn)
-        current_player = players[(turn - 1) % len(players)]
-        action = user_input(current_player['name'])
+        print("Turn", (turn + 1))
+        action = user_input(players[turn % len(players)]['name'])
         if action == 'm':
-            pass
+            dice_roll = random.randint(2, 12)
+            print("You rolled a", dice_roll, end="\n\n")
+            move_player(players, turn, board, dice_roll)
+            turn += 1
         elif action == 'p':
-            print_player(player, board)
+            print_player(players[turn % len(players)], board)
         elif action == 'q':
             print("Sorry to see you leave so soon.")
             break
