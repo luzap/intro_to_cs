@@ -4,23 +4,21 @@ Author: Lukas Zapolskas
 NetID: lz1477
 
 This is a purely text-based Monopoly implementation, attempting to adhere
-to the rules of the original game as close as possible. 
-
-Implementation goals:
-- game loop
-- purchase
-- heuristics
-    - optimal strategy of automatic purchase: ALL, NONE, RANDOM
-    - 
-
+to the rules of the original game as close as possible.
 """
 import random
-import time
-import argparse
 
 # Global variable to determine the type of the property without
 # hard-coding them in
 types_of_properties = enumerate(["street", "railroad", "utility"], start=1)
+
+# Global properties that cannot be bought and could be implemented to
+# have different functionality
+taboo = ['Community chest', 'Go', "Community chest", 'Income Tax']
+
+##
+# Functions required by assignment
+##
 
 
 def get_board(csv_file: str) -> list:
@@ -38,7 +36,8 @@ def get_board(csv_file: str) -> list:
             properties.append(prop)
 
         # Conversion of string to integer types
-        # I suppose I could just write in the three entries, but this is more fun
+        # I suppose I could just write in the three entries, but this is more
+        # fun
         integer_entries = [item for item in list(properties[0].keys())
                            if item not in ["owner", "name"]]
         for prop in properties:
@@ -77,7 +76,7 @@ def print_board(board: list, players: list) -> None:
 
 def print_player(player: dict, board: list) -> None:
     """Print the information about an individual player."""
-    print("Player", player['name'])
+    print(player['name'])
     print("\tWallet:", player['balance'])
     print("\tPosition:", player['position'])
     properties = []
@@ -89,15 +88,20 @@ def print_player(player: dict, board: list) -> None:
         print("\t\t" + "\n".join(properties))
 
 
-def move_player(players: list, turn: int, board: list, dice_roll: int) -> None:
+def move_player(players: list, index: int, board: list, dice_roll: int) -> str:
+    """Move the players on the board."""
     current_pos = 0
-    location = players[turn % len(players)]['position']
-    for item in board:
+    location = players[index]['position']
+    for item in board:  # Determine the current position of the player
         if item['name'] == location:
             current_pos = board.index(item)
     final_pos = (current_pos + dice_roll) % len(board)
-    print(board[final_pos]['name'])
-    players[turn % len(players)]['position'] = board[final_pos]['name']
+    if final_pos < current_pos:
+        # Add the money after passing Go
+        players[index]['wallet'] -= board[0]['rent']
+    # Assign position key a new value
+    players[index]['position'] = board[final_pos]['name']
+    return board[final_pos]['name']
 
 
 def type_counter(player: dict, board: list, tile_type: int) -> int:
@@ -114,17 +118,50 @@ def iswinner(players: list) -> (bool, str):
             name = player['name']
     return (broke == (len(players) - 1)), name
 
+##
+# Custom functions
+##
 
-def user_input(player: str) -> str:
-    """Ask for user input and parse it down into options."""
-    data = input("{} [m: move; p: print info; q: quit]\n> ".format(player))
-    print(data)
-    data = data.strip()[0] if len(data) != 0 else "p"
-    return data
+
+# TODO Type annotations
+def pay_rent(players: list, index: int, owner_ind: int, location: str) -> None:
+    """Subtract the rent from the balance of the moving player and add it to owner's balance."""
+    rent = board[find_dict(location, board)]['rent']
+    players[index]['wallet'] -= rent
+    players[find_dict(board[owner_ind]['owner'], players)]['wallet'] += rent
+
+
+def find_dict(attribute: str, dictionary: dict) -> int:
+    """Return the index of dictionary that has a specific value."""
+    for item in dictionary:
+        if attribute in item.values():
+            print(item.values())
+            return dictionary.index(item)
+
+
+def gen_movement(players: list, index: int, board: list):
+    """Allow for player movement while keeping data persistance."""
+    dice_roll = random.randint(2, 12)
+    if pvp:
+        print("You rolled a", dice_roll)
+    location = move_player(players, index, board, dice_roll)
+    owner = find_dict('owner', board)
+    if owner is not None:
+        pay_rent(players, index, owner)
+    else:
+        if (players[index]['balance'] >= board[find_dict(location, board)]['cost'])
+        and (location not in taboo):
+            yn = input("Would you like to buy the property?\n> ").strip()[0]
+            if yn.lower() == 'y':
+                players[index]['balance'] -= board[pos_index]['cost']
+            else:
+                print("Okay then. Stingy...")
+        else:
+            print("This property has no owner, but you're too broke to buy it. Oops.")
 
 
 # TODO Convert this into something that would support heuristics
-def core_gameloop()-> None:
+def core_gameloop() -> None:
     """Initial game loop which will then be abstracted to allow for computer input."""
     players = get_players(int(input("How many players are playing? ")))
     board = get_board("monopoly.csv")
@@ -132,11 +169,12 @@ def core_gameloop()-> None:
     print("Note that the default option is print player stats.")
     while not iswinner(players)[0]:
         print("Turn", (turn + 1))
-        action = user_input(players[turn % len(players)]['name'])
+        index = turn % len(players)
+        data = input("{} [m: move; p: print info; q: quit]\n> ".format(
+            players[index]['name']))
+        action = data.strip()[0] if len(data) != 0 else "p"
         if action == 'm':
-            dice_roll = random.randint(2, 12)
-            print("You rolled a", dice_roll, end="\n\n")
-            move_player(players, turn, board, dice_roll)
+            gen_movement(players, index, board)
             turn += 1
         elif action == 'p':
             print_player(players[turn % len(players)], board)
@@ -148,20 +186,6 @@ def core_gameloop()-> None:
     else:
         print("The winner is", iswinner(players)[1])
 
-
-# # Command line options
-# parser = argparse.ArgumentParser(
-#     description="Start the game with varying gamemodes.")
-# parser.add_argument('pvp', type=bool, default=True, re
-#                     help="Run monopoly.py in player vs player or \
-#                      heuristics mode.")
-# args = parser.parse_args()
-
-# if args.pvp or (args.pvp is None):
-#     gameloop_main()
-# else:
-#     raise NotImplementedError(
-#         "The functions responsible for this are not yet implemented.")
 
 if __name__ == "__main__":
     core_gameloop()
