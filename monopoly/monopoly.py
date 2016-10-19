@@ -207,7 +207,8 @@ def gameloop() -> None:
     while not iswinner(players)[0]:
         for player in players:
             if player['wallet'] <= 0:
-                print("{} is broke and can no longer participate!".format(player['name']))
+                print("{} is broke and can no longer participate!".format(
+                    player['name']))
                 players.remove(player)
                 for prop in board:
                     if prop['owner'] == player['name']:
