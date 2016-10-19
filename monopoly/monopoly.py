@@ -90,7 +90,8 @@ def print_player(player: dict, board: list) -> None:
             properties.append(item['name'])
     if len(properties):
         print("\tProperties:")
-        print("\t\t" + "\n".join(properties))
+        for item in properties:
+            print("\t\t", item)
 
 
 def move_player(players: list, index: int, board: list, dice_roll: int) -> str:
@@ -149,7 +150,7 @@ def pay_rent(players: list, index: int, board: list, owner: str,
     players[index]['wallet'] -= rent
     for player in players:
         if player['name'] == owner:
-            owner_ind = players.index(owner)
+            owner_ind = players.index(player)
 
     players[index]['wallet'] += rent
     print("{} payed {} to {} in rent".format(players[index]['name'], rent,
@@ -183,7 +184,7 @@ def gen_movement(players: list, index: int, board: list):
             if players[index]['wallet'] >= \
                     board[loc_index]['cost'] and board[loc_index]['type'] > 0:
                 yn = input("""It seems your balance is sufficient to buy this
-property. Would you like to do so? """).strip()[0]
+property. Would you like to do so? """.replace("\n", " ")).strip()[0]
                 if yn.lower() == 'y':  # Lowercase ensures match
                     players[index][
                         'wallet'] -= board[find_dict(location, board)]['cost']
@@ -206,7 +207,7 @@ def gameloop() -> None:
     while not iswinner(players)[0]:
         for player in players:
             if player['wallet'] <= 0:
-                print("{} is broke and can no longer participate!")
+                print("{} is broke and can no longer participate!".format(player['name']))
                 players.remove(player)
                 for prop in board:
                     if prop['owner'] == player['name']:
