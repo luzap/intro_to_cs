@@ -5,16 +5,14 @@ NetID: lz1477
 
 This is a purely text-based Monopoly implementation, attempting to adhere
 to the rules of the original game as close as possible.
+
+The function declarations given in the GitHub description have been altered
+slightly by adding the the index variable, and passing the list of players.
+This was done to make the data persistent, as passing the player when not
+in the list would require replacement, and this way, the functions are
+more self contained.
 """
 import random
-
-# Global variable to determine the type of the property without
-# hard-coding them in
-types_of_properties = enumerate(["street", "railroad", "utility"], start=1)
-
-# Global properties that cannot be bought and could be implemented to
-# have different functionality
-taboo = ['Community chest', 'Go', "Community chest", 'Income Tax']
 
 ##
 # Functions required by assignment
@@ -54,7 +52,7 @@ def get_players(n: int) -> list:
         # The name should be a unique identifier, so padding ensures uniqueness
         players.append({
             "name": "Player {}".format(player + 1),
-            "balance": 1500,
+            "wallet": 1500,
             "position": "Go"
         })
     return players
@@ -66,19 +64,26 @@ def print_board(board: list, players: list) -> None:
         print(entry["name"])
         if entry["owner"] not in ["", "bank"]:
             print("\tOwner:", entry["owner"])
+
+        # Print players in a certain position
         players_on_position = []
         for player in players:
             if player["position"] == entry["name"]:
                 players_on_position.append(player['name'])
+
+        # If there are any players in the position, print
         if len(players_on_position):
             print("\tResidents:", ", ".join(players_on_position))
 
 
 def print_player(player: dict, board: list) -> None:
     """Print the information about an individual player."""
+    # Values associated with the player
     print(player['name'])
-    print("\tWallet:", player['balance'])
+    print("\tWallet:", player['wallet'])  # Tab character shifts alignment
     print("\tPosition:", player['position'])
+
+    # Values associated with the board
     properties = []
     for item in board:
         if item['owner'] == player['name']:
@@ -90,29 +95,41 @@ def print_player(player: dict, board: list) -> None:
 
 def move_player(players: list, index: int, board: list, dice_roll: int) -> str:
     """Move the players on the board."""
+
     current_pos = 0
     location = players[index]['position']
+
     for item in board:  # Determine the current position of the player
         if item['name'] == location:
             current_pos = board.index(item)
+
+    # Wrap around
     final_pos = (current_pos + dice_roll) % len(board)
+
+    # Add the money after passing Go
     if final_pos < current_pos:
-        # Add the money after passing Go
         players[index]['wallet'] -= board[0]['rent']
+
     # Assign position key a new value
     players[index]['position'] = board[final_pos]['name']
+    print("{} arrived at {}".format(players[index]['name'],
+                                    board[final_pos]['name']))
     return board[final_pos]['name']
 
 
-def type_counter(player: dict, board: list, tile_type: int) -> int:
-    pass
+def type_counter(players: dict, index: int, board: list, tile_type: int) -> int:
+    count = 0
+    player_name = players[index]['name']
+    for item in board:
+        if (item['owner'] == player_name) and (item['type'] == tile_type):
+            count += 1
 
 
 def iswinner(players: list) -> (bool, str):
     """Determine whether there is a winner by checking the balances of all players."""
     broke = 0
     for player in players:
-        if player['balance'] == 0:
+        if player['wallet'] == 0:
             broke += 1
         else:
             name = player['name']
@@ -123,54 +140,80 @@ def iswinner(players: list) -> (bool, str):
 ##
 
 
-# TODO Type annotations
-def pay_rent(players: list, index: int, owner_ind: int, location: str) -> None:
-    """Subtract the rent from the balance of the moving player and add it to owner's balance."""
-    rent = board[find_dict(location, board)]['rent']
+def pay_rent(players: list, index: int, board: list, owner: str,
+             loc_index: int) -> None:
+    """Subtract the rent from the balance of the moving player and add it to
+    owner's balance."""
+
+    rent = board[loc_index]['rent']
     players[index]['wallet'] -= rent
-    players[find_dict(board[owner_ind]['owner'], players)]['wallet'] += rent
+    for player in players:
+        if player['name'] == owner:
+            owner_ind = players.index(owner)
+
+    players[index]['wallet'] += rent
+    print("{} payed {} to {} in rent".format(players[index]['name'], rent,
+                                             players[owner_ind]['name']))
 
 
 def find_dict(attribute: str, dictionary: dict) -> int:
     """Return the index of dictionary that has a specific value."""
     for item in dictionary:
         if attribute in item.values():
-            print(item.values())
             return dictionary.index(item)
 
 
 def gen_movement(players: list, index: int, board: list):
     """Allow for player movement while keeping data persistance."""
-    dice_roll = random.randint(2, 12)
-    if pvp:
-        print("You rolled a", dice_roll)
+    dice_roll = random.randint(2, 12)  # Two dice
+    print("You rolled a", dice_roll)
     location = move_player(players, index, board, dice_roll)
-    owner = find_dict('owner', board)
-    if owner is not None:
-        pay_rent(players, index, owner)
-    else:
-        if (players[index]['balance'] >= board[find_dict(location, board)]['cost'])
-        and (location not in taboo):
-            yn = input("Would you like to buy the property?\n> ").strip()[0]
-            if yn.lower() == 'y':
-                players[index]['balance'] -= board[pos_index]['cost']
-            else:
-                print("Okay then. Stingy...")
+    loc_index = find_dict(location, board)
+
+    # If owner of tile exists, he needs to be found
+    owner_ind = 0
+    for item in board:
+        if location in item.values():
+            owner_ind = board.index(item)
+
+    # Taking care of purchasing and renting
+    if owner_ind is not None:
+        owner = board[owner_ind]['owner']
+        if owner == 'bank':
+            if players[index]['wallet'] >= \
+                    board[loc_index]['cost'] and board[loc_index]['type'] > 0:
+                yn = input("""It seems your balance is sufficient to buy this
+property. Would you like to do so? """).strip()[0]
+                if yn.lower() == 'y':  # Lowercase ensures match
+                    players[index][
+                        'wallet'] -= board[find_dict(location, board)]['cost']
+                    board[find_dict(location, board)][
+                        'owner'] = players[index]['name']
+                    print("You have successfully purchased this property!")
+                else:
+                    print("Stingy...")
         else:
-            print("This property has no owner, but you're too broke to buy it. Oops.")
+            if board[loc_index]['type'] > 0:
+                pay_rent(players, index, board, owner, loc_index)
 
 
-# TODO Convert this into something that would support heuristics
-def core_gameloop() -> None:
+def gameloop() -> None:
     """Initial game loop which will then be abstracted to allow for computer input."""
     players = get_players(int(input("How many players are playing? ")))
     board = get_board("monopoly.csv")
     turn = 0
     print("Note that the default option is print player stats.")
     while not iswinner(players)[0]:
-        print("Turn", (turn + 1))
+        for player in players:
+            if player['wallet'] <= 0:
+                print("{} is broke and can no longer participate!")
+                players.remove(player)
+                for prop in board:
+                    if prop['owner'] == player['name']:
+                        prop['owner'] = 'bank'
+        print("\nTurn", (turn + 1))
         index = turn % len(players)
-        data = input("{} [m: move; p: print info; q: quit]\n> ".format(
+        data = input("{} [m: move; p: player info; b: board; q: quit;]\n> ".format(
             players[index]['name']))
         action = data.strip()[0] if len(data) != 0 else "p"
         if action == 'm':
@@ -178,14 +221,16 @@ def core_gameloop() -> None:
             turn += 1
         elif action == 'p':
             print_player(players[turn % len(players)], board)
+        elif action == 'b':
+            print_board(board, players)
         elif action == 'q':
             print("Sorry to see you leave so soon.")
             break
         else:
-            print("Sorry, didn't quite catch that. And you skipped your turn!")
+            print("Sorry, didn't quite catch that. Please try again!")
     else:
         print("The winner is", iswinner(players)[1])
 
 
 if __name__ == "__main__":
-    core_gameloop()
+    gameloop()
