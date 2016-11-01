@@ -51,6 +51,7 @@ for _ in range(tests):
         another_day = today.copy()
         for k in range(-1, 2):
             another_day[i] = j + k
+            print(today, another_day, lab.is_older(today, another_day))
             x &= not lab.is_older(today, another_day) ^ (k > 0)
 results['is_older'] = x
 
