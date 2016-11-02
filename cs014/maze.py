@@ -4,35 +4,32 @@ import helpers
 
 
 def find_path(board, row, col):
-    # Possible cells for movement. Limited to a
-    paths = [(row - 1, col), (row, col - 1),
-             (row + 1, col), (row, col + 1)]
+    if not helpers.islegal(board, row, col):
+        return False
 
-    next_cells = [cell for cell in paths if helpers.islegal(board, cell[
-                                                            0], cell[1])]
-
-    next_cells = [cell for cell in next_cells if board[
-        cell[0]][cell[1]] == "."]
-
-    victory = any(
-        list([victor for cell in next_cells if board[cell[0]][cell[1]] == "x"]))
-
-    print(next_cells)
-
-    if not victory:
-        if not len(next_cells):
-            return False
-        elif len(next_cells) == 1:
-            row, col = next_cells[0]
-            board[row][col] = "*"
-            find_path(board, row, col)
-        else:
-            for item in next_cells:
-                row, col = item
-                board[row][col] = "*"
-                find_path(board, item[0], item[1])
-    else:
+    if board[row][col] == "x":
         return True
+    elif board[row][col] == ".":
+        pass
+    elif board[row][col] == 'o':
+        pass
+    else:
+        return False
+
+    board[row][col] = "*"
+    if find_path(board, row + 1, col):
+        return True
+
+    if find_path(board, row - 1, col):
+        return True
+
+    if find_path(board, row, col + 1):
+        return True
+
+    if find_path(board, row, col - 1):
+        return True
+
+    return False
 
 
 board = helpers.get_board('board.txt')
