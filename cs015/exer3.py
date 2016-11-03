@@ -18,11 +18,17 @@ class Rock:
     def __eq__(self, other):
         return self.name == other.name
 
+    def __str__(self):
+        return self.name
+
 
 class Paper:
 
     def __init__(self):
         self.name = "paper"
+
+    def __str__(self):
+        return self.name
 
     def __gt__(self, other):
         if other.name == "rock":
@@ -59,3 +65,6 @@ class Scissors:
 
     def __eq__(self, other):
         return self.name == other.name
+
+    def __str__(self):
+        return self.name
