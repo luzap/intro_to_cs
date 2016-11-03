@@ -8,7 +8,7 @@ class Rock:
         self.name = "rock"
 
     def __gt__(self, other):
-        if other.name == "paper":
+        if other.name == "scissors":
             return True
         else:
             return False
@@ -41,7 +41,7 @@ class Paper:
             return False
 
     def __lt__(self, other):
-        if other.name != "rock":
+        if other.name == "scissors":
             return True
         else:
             return False
@@ -62,7 +62,7 @@ class Scissors:
             return False
 
     def __lt__(self, other):
-        if other.name != "paper":
+        if other.name == "rock":
             return True
         else:
             return False
@@ -81,16 +81,12 @@ stats = {
     "ties": 0
 }
 
-for i in range(1, 10):
+rounds = int(input("How many rounds are to be played? "))
+
+for i in range(1, rounds):
     player1 = random.choice(hands)
     player2 = random.choice(hands)
 
-    print("Player 1", player1)
-    print("Player 2", player2)
-    print(player1 > player2)
-    print(player1 < player2)
-    print(player1 == player2)
-    
     if player1 > player2:
         stats['wins'] += 1
     elif player1 < player2:
