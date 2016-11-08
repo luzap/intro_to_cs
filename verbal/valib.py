@@ -3,6 +3,7 @@ Verbal Arithmetic
 
 Lukas Zapolskas, lz1477
 """
+from random import choice
 
 
 def create(eq_file):
@@ -45,6 +46,7 @@ def display(equation):
     formatted.insert(-1, "-" * spaces + "\n")
     print("".join(formatted))  # Print out the joined string
     guess(['A1B2C3', 'Z9'])
+    print(replace(["HELLO", "WORLD", "TOOLS"], 9))
 
 
 def guess(equation):
@@ -80,13 +82,17 @@ def replace(equation, number):
     :param number: int
     :returns: list
     """
-    # Simple way to remove duplicates by obtainin
+    # Any better way of getting a random character?
+
+    # Python sets don't have duplicate members
     characters = list(
         set([char for word in equation for char in word if char.isalpha()]))
+    char = choice(characters)
+    return list(map(lambda x: x.replace(char, str(number)), equation))
 
 
 def accept(equation):
-    """Checks for three conditions before deciding whether or not the proposed 
+    """Checks for three conditions before deciding whether or not the proposed
     equation works.
 
     :param equation: list of strings
@@ -119,3 +125,7 @@ def reject(equation):
 
 def solve(equation):
     return []
+
+
+if __name__ == "__main__":
+    display(create("equations/00.txt"))
