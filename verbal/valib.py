@@ -79,7 +79,31 @@ def replace(equation, number):
 
 
 def accept(equation):
-    return False
+    """Checks for three conditions before deciding whether or not the proposed 
+    equation works.
+    
+    :param equation: list of strings
+    :returns: bool
+    """
+
+    # Maps all strings to integers
+    numeric = [int(x) for x in equation if x.isdigit()]
+
+    # Checks for one-to-one mapping of equations to numeric
+    if len(numeric) != len(equation):
+        return False
+
+    # Checks whether or not the sum of elements up to n - 1 
+    # is equal to n
+    if sum(numeric[:-1]) != numeric[-1]:
+        return False
+
+    # Checks if the first values are non-zero
+    if not all(filter(lambda x: int(x[0]) > 0, equation)):
+        return False
+
+    # If all of the tests pass, return True
+    return True
 
 
 def reject(equation):
