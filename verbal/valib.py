@@ -54,7 +54,7 @@ def guess(equation):
     :param equation: list of strings
     :returns: list of integers
     """
-    # Generates a list of numbers from 0 to 9 to be compared against 
+    # Generates a list of numbers from 0 to 9 to be compared against
     # the numbers already used
     unused_numbers = [x for x in range(10)]
 
@@ -62,11 +62,11 @@ def guess(equation):
     for sequence in equation:
         # Splits a string into two character chuncks. Needed to obtain
         # the numeric character.
-        sequence = [sequence[i:i+2] for i in range(0, len(sequence), 2)]
+        sequence = [sequence[i:i + 2] for i in range(0, len(sequence), 2)]
         for pair in sequence:
-            # Usage of str.isdigit() to determine whether or not the 
+            # Usage of str.isdigit() to determine whether or not the
             # character is convertible, otherwise assigning None via
-            # a ternary operator(?)
+            # a ternary operator (?)
             numeric = int(pair[-1]) if pair[-1].isdigit() else None
             # Removes used entries. If numeric is None, then nothing
             # happens, so an if-statement is not necessary
@@ -75,13 +75,20 @@ def guess(equation):
 
 
 def replace(equation, number):
-    return []
+    """Replace some character in equations with a number.
+    :param equation: list of strings
+    :param number: int
+    :returns: list
+    """
+    # Simple way to remove duplicates by obtainin
+    characters = list(
+        set([char for word in equation for char in word if char.isalpha()]))
 
 
 def accept(equation):
     """Checks for three conditions before deciding whether or not the proposed 
     equation works.
-    
+
     :param equation: list of strings
     :returns: bool
     """
@@ -93,7 +100,7 @@ def accept(equation):
     if len(numeric) != len(equation):
         return False
 
-    # Checks whether or not the sum of elements up to n - 1 
+    # Checks whether or not the sum of elements up to n - 1
     # is equal to n
     if sum(numeric[:-1]) != numeric[-1]:
         return False
