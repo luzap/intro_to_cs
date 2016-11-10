@@ -64,5 +64,5 @@ while not deck.empty():
     else:
         h2.wins += 1
 
-print(h1.wins)
-print(h2.wins)
+print(h1.name, h1.wins)
+print(h2.name, h2.wins)

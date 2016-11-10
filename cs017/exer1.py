@@ -7,8 +7,8 @@ class Player:
         self.name = name
         self.power = 100
 
-    def player_info(self):
-        print(self.name)
+    def __str__(self):
+        return self.name + "\t" + str(self.power)
 
 
 class FastPlayer(Player):
@@ -17,9 +17,8 @@ class FastPlayer(Player):
         super().__init__(name)
         self.speed = speed
 
-    def player_info(self):
-        super().player_info()
-        print(self.speed)
+    def __str__(self):
+        return super().__str__() + "\t" + str(self.speed)
 
 
 class TallPlayer(Player):
@@ -28,9 +27,8 @@ class TallPlayer(Player):
         super().__init__(name)
         self.height = height
 
-    def player_info(self):
-        super().player_info()
-        print(self.height)
+    def __str__(self):
+        return super().__str__() + "\t" + str(self.height)
 
 
 class CoolPlayer(Player):
@@ -39,14 +37,14 @@ class CoolPlayer(Player):
         super().__init__(name)
         self.awesomeness = awesomeness
 
-    def player_info(self):
-        super().player_info(),
-        print(self.awesomeness)
-
+    def __str__(self):
+        return super().__str__() + "\t" + str(self.awesomeness)
 
 a = Player('Johny')
-a.player_info()
+print(a)
 b = TallPlayer("Tim", 1.8)
-b.player_info()
+print(b)
 c = FastPlayer("Tom", 5)
-c.player_info()
+print(c)
+d = CoolPlayer("Minchin", 0)
+print(d)
