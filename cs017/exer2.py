@@ -4,8 +4,8 @@ from random import choice
 
 suit = {
     "spades": 0,
-    "hearts": 1
-    "diamonds": 2
+    "hearts": 1,
+    "diamonds": 2,
     "clubs": 3
 }
 
@@ -34,6 +34,9 @@ class Deck(list):
         self.remove(card)
         return card
 
+    def empty(self):
+        return (len(self) == 0)
+
 
 class Hand:
 
@@ -47,3 +50,19 @@ class Hand:
 
     def __gt__(self, other):
         return self.card > other.card
+
+h1 = Hand("Player 1")
+h2 = Hand("Player 2")
+deck = Deck()
+
+while not deck.empty():
+    h1.receive(deck.deal())
+    h2.receive(deck.deal())
+
+    if h1 > h2:
+        h1.wins += 1
+    else:
+        h2.wins += 1
+
+print(h1.wins)
+print(h2.wins)
