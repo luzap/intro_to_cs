@@ -83,6 +83,7 @@ def replace(equation, number):
     :returns: list
     """
     for word in equation:
+        # Going from the last character of the first word and going from there
         chars = reversed(list(word))
         for char in chars:
             if char.isalpha():
@@ -118,12 +119,17 @@ def accept(equation):
 
 
 def reject(equation):
-    return False
+    """Reject possible solutions based upon how well the first several
+    characters fit into the model."""
+    numeric = []
+    for word in equation:
+        numeric = [int(x) for x in word if x.isdigit()]
+    return (sum(numeric[:-1]) == numeric[-1])
 
 
 def solve(equation):
-    return []
-
+    nums = guess(equation)
+    for number in 
 
 if __name__ == "__main__":
     display(create("equations/00.txt"))
