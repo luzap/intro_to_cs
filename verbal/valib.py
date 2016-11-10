@@ -82,13 +82,11 @@ def replace(equation, number):
     :param number: int
     :returns: list
     """
-    # Any better way of getting a random character?
-
-    # Python sets don't have duplicate members
-    characters = list(
-        set([char for word in equation for char in word if char.isalpha()]))
-    char = choice(characters)
-    return list(map(lambda x: x.replace(char, str(number)), equation))
+    for word in equation:
+        chars = reversed(list(word))
+        for char in chars:
+            if char.isalpha():
+                return list(map(lambda x: x.replace(char, str(number)), equation))
 
 
 def accept(equation):
