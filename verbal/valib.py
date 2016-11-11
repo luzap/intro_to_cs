@@ -4,6 +4,7 @@ Verbal Arithmetic
 Lukas Zapolskas, lz1477
 """
 import random
+from functools import partial
 
 
 def create(eq_file):
@@ -109,6 +110,18 @@ def accept(equation):
     return True
 
 
+def get_ending(string, char_index):
+    """I was having some issues capturing the last character of a
+    string when using string slicing, so I decided to reverse the string,
+    take characters off of the start, and re-reverse it.
+
+    :param string: str
+    :param char_index: int (the position up to which slicing happens)
+    :returns: str
+    """
+    return string[::-1][:char_index][::-1]
+
+
 def reject(equation):
     """Reject possible solutions based upon how well the first several
     characters fit into the model.
@@ -149,14 +162,31 @@ def reject(equation):
     # smallest string, and then check if the addition works purely
     # for that. This way, one does not need to know anything else
     # about the equation to check whether or not it works
-    nums_used = min(map(len, check))
+    if len(check) > 1:
+        nums_used = min(map(len, check))
+    else:
+        # I'm slightly not too sure about this step, but I think
+        # it's needed to make sure that the reject will not
+        # return False for cases when there has not been enough replacement
+        return True
 
-    # print(not (str(sum(check)) in equation[-1]))
+    # Usage of functools.partial to call function with values from an iterator
+    # and a constant
+    spec_check = list(map(partial(get_ending, char_index=nums_used), check))
+
+    # The following gets the sum of all of the numbers, then converts it back into
+    # a string and cuts it down to the required lenght
+    cut_sum = get_ending(str(sum(map(int, spec_check))), nums_used)
+    print(cut_sum)
+    # The same done to the ending
+    ending_value = int(get_ending(equation[-1], nums_used))
+
+    return not (str(ending_value) == cut_sum)
 
 
 def solve(equation):
     """Using all of the functions implemented above, recursively replaces each
-    character with a numeral and checks whether or not the following equation 
+    character with a numeral and checks whether or not the following equation
     is solvable.
 
     :param equation: list of strings
@@ -170,4 +200,4 @@ def solve(equation):
 
 
 if __name__ == "__main__":
-    print(reject(["A567", "1E85", "PE652"]))
+    print(reject(["MORE", "SEND", "MONEY"]))
