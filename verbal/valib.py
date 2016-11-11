@@ -21,6 +21,16 @@ def create(eq_file):
     return words
 
 
+def longest_len(equation):
+    """Returns the lenght of the longest word in a list.
+
+    :param equation: list of strings
+    :returns: int
+    """
+    # This returns a list sorted from shortest to longest
+    return len(sorted(equation, key=len)[-1])
+
+
 def display(equation):
     """Display right justified equation.
 
@@ -30,7 +40,7 @@ def display(equation):
     # Creates the same list sorted by increasing length
     # The + 2 is done to take into accound the plus and
     # the whitespace around it
-    spaces = len(sorted(equation, key=len)[-1]) + 2
+    spaces = longest_len(equation) + 2
     formatted = []
 
     # second_last checks whether or not the word being considered
@@ -75,14 +85,32 @@ def replace(equation, number):
     :param number: int
     :returns: list
     """
-    for word in equation:
-        # Going from the last character of the first word and going from there
-        chars = list(reversed(list(word)))
-        for char in chars:
+
+    # Since the rest of the solution depends on a right to left
+    # processing mentality, the last character of each word needs
+    # to go first
+    # Copy is made to ensure the padding needed for later steps
+    # works in the correct manner
+    padded_equation = equation[:]
+    characters = longest_len(padded_equation)
+
+    for i in range(len(padded_equation)):
+        if len(padded_equation[i]) < characters:
+            padded_equation[
+                i] = " " * (characters - len(padded_equation[i])) + padded_equation[i]
+
+    # Due to additional padding, treats the equation lists as an n*n array
+    # and transposes it, for one tuple to have all of the ending elements
+    char_list = reversed(list(zip(*padded_equation)))
+
+    for char_set in char_list:
+        for char in char_set:
+            # Since spaces aren't numerical, no more checks are needed
             if char.isalpha():
                 # Returns upon finding the first rightmost character
                 # that's not a number
-                return list(map(methodcaller("replace", char, str(number)), equation))
+                return list(map(methodcaller("replace", char, str(number)),
+                                equation))
 
 
 def accept(equation):
@@ -171,7 +199,7 @@ def reject(equation):
         # I'm slightly not too sure about this step, but I think
         # it's needed to make sure that the reject will not
         # return False for cases when there has not been enough replacement
-        return True
+        return False
 
     # Usage of functools.partial to call function with values from an iterator
     # and a constant
@@ -184,7 +212,7 @@ def reject(equation):
     ending_value = get_ending(equation[-1], nums_used)
 
     # The inversion is more like semantic sugar. If something is rejected,
-    # I make sure it returns a value of True, to reduce the amount of 
+    # I make sure it returns a value of True, to reduce the amount of
     # confusion in the logic
     return not (ending_value == cut_sum)
 
@@ -196,7 +224,7 @@ def solve(equation):
 
     :param equation: list of strings
     :param rejected: dictionary
-    :returns: lists
+    :returns: list
     """
     if accept(equation):
         return equation
@@ -204,9 +232,24 @@ def solve(equation):
         return []
 
     possibilities = guess(equation)
-    replacement = random.choice(possibilities)
+    replaced = []
+    if len(guess(equation)) == 10:
+        for i in range(2):
+            replacement = random.choice(possibilities)
+            replaced.append(replacement)
+            possibilities.remove(replacement)
+            new = replace(equation if i == 0 else new, replacement)
+        if equation[-1][-1].isdigit() and \
+                int(equation[-1][-1]) != (sum(replaced) % 10):
+            solve(equation)
+        else:
+            new = replace(new, sum(replaced) % 10)
 
+    if new is not None:
+        equation = new
+
+    
 
 
 if __name__ == "__main__":
-    print(solve(create("equations/00.txt")))
+    solve(create("equations/00.txt"))
