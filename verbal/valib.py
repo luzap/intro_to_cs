@@ -5,6 +5,7 @@ Lukas Zapolskas, lz1477
 """
 import random
 from functools import partial
+from operator import methodcaller
 
 
 def create(eq_file):
@@ -79,7 +80,9 @@ def replace(equation, number):
         chars = list(reversed(list(word)))
         for char in chars:
             if char.isalpha():
-                return list(map(lambda x: x.replace(char, str(number)), equation))
+                # Returns upon finding the first rightmost character
+                # that's not a number
+                return list(map(methodcaller("replace", char, str(number)), equation))
 
 
 def accept(equation):
@@ -177,11 +180,13 @@ def reject(equation):
     # The following gets the sum of all of the numbers, then converts it back into
     # a string and cuts it down to the required lenght
     cut_sum = get_ending(str(sum(map(int, spec_check))), nums_used)
-    print(cut_sum)
     # The same done to the ending
-    ending_value = int(get_ending(equation[-1], nums_used))
+    ending_value = get_ending(equation[-1], nums_used)
 
-    return not (str(ending_value) == cut_sum)
+    # The inversion is more like semantic sugar. If something is rejected,
+    # I make sure it returns a value of True, to reduce the amount of 
+    # confusion in the logic
+    return not (ending_value == cut_sum)
 
 
 def solve(equation):
@@ -193,11 +198,15 @@ def solve(equation):
     :param rejected: dictionary
     :returns: lists
     """
+    if accept(equation):
+        return equation
+    elif not len(guess(equation)):
+        return []
 
-    replacement = guess(equation)[0]
-    new = replace(equation, replacement)
-    print(new)
+    possibilities = guess(equation)
+    replacement = random.choice(possibilities)
+
 
 
 if __name__ == "__main__":
-    print(reject(["MORE", "SEND", "MONEY"]))
+    print(solve(create("equations/00.txt")))
