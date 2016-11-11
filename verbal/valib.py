@@ -2,10 +2,20 @@
 Verbal Arithmetic
 
 Lukas Zapolskas, lz1477
+
+
+Please note that the final function, solve, has not been implemented
 """
 import random
 from functools import partial
 from operator import methodcaller
+
+
+class Carry:
+    """Basic class used to store the carry value which appears to be
+    needed for the recursion to stay within a manageable number of times."""
+    current_carry = 0
+    column = -1
 
 
 def create(eq_file):
@@ -217,39 +227,60 @@ def reject(equation):
     return not (ending_value == cut_sum)
 
 
+# TODO Fix RecursionError
+# TODO Why does the colmun by column not work as expected?
 def solve(equation):
-    """Using all of the functions implemented above, recursively replaces each
-    character with a numeral and checks whether or not the following equation
-    is solvable.
+    """Takes the rightmost column of character that has not yet been replaced
+    with numerals, replaces all of them at random, and then checks whether or
+    not the addition works. If it does, and there is a carry, it is assigned
+    to the static Carry class made at the beginning of the document.
+
+    This function does not work in its current form, but the rest of the functions
+    work on their own.
 
     :param equation: list of strings
     :param rejected: dictionary
     :returns: list
     """
+    # Base condition
     if accept(equation):
         return equation
-    elif not len(guess(equation)):
+
+    # By not instantiating the Carry class, it becomes static, and thus
+    # can be used to store variables (thanks Java!)
+    carry = Carry.current_carry
+    curr_col = Carry.column
+
+    # Allows to keep track of the cumulative sum of the characters
+    used = []
+
+    # Takes into account more words than expected
+    for i in range(len(equation[:-1])):
+        # Called upon every iteration to see what numbers are still available
+        possibilities = guess(equation)
+        repl = random.choice(guess(equation))
+        used.append(repl)
+        new = replace(equation if i == 0 else new, repl)
+
+    # New guesses for the following functions
+    guesses = guess(new)
+
+    # Check whether or not an incorrect substitution has already occurred
+    if equation[-1][curr_col].isdigit() and reject(new):
+        Carry.current_carry = 0
+        solve(equation)
+
+    # If no replacement has occurred, then check for the possibility of
+    # replacement with the appropriate number
+    elif (sum(used) + carry) % 10 in guesses:
+        new = replace(new, (sum(used) + carry) % 10)
+        Carry.current_carry = sum(used) // 10
+        Carry.column -= 1
+    else:
+        # More of a placeholder
         return []
-
-    possibilities = guess(equation)
-    replaced = []
-    if len(guess(equation)) == 10:
-        for i in range(2):
-            replacement = random.choice(possibilities)
-            replaced.append(replacement)
-            possibilities.remove(replacement)
-            new = replace(equation if i == 0 else new, replacement)
-        if equation[-1][-1].isdigit() and \
-                int(equation[-1][-1]) != (sum(replaced) % 10):
-            solve(equation)
-        else:
-            new = replace(new, sum(replaced) % 10)
-
-    if new is not None:
-        equation = new
-
-    
 
 
 if __name__ == "__main__":
-    solve(create("equations/00.txt"))
+    print(solve(create("equations/00.txt")))
+
