@@ -3,7 +3,7 @@ Verbal Arithmetic
 
 Lukas Zapolskas, lz1477
 """
-from random import choice
+import random
 
 
 def create(eq_file):
@@ -45,8 +45,6 @@ def display(equation):
     # of the for-loop would make its purpose clearer
     formatted.insert(-1, "-" * spaces + "\n")
     print("".join(formatted))  # Print out the joined string
-    guess(['A1B2C3', 'Z9'])
-    print(replace(["HELLO", "WORLD", "TOOLS"], 9))
 
 
 def guess(equation):
@@ -59,32 +57,25 @@ def guess(equation):
     # Generates a list of numbers from 0 to 9 to be compared against
     # the numbers already used
     unused_numbers = [x for x in range(10)]
-
-    # The equation can be given as a list
-    for sequence in equation:
-        # Splits a string into two character chuncks. Needed to obtain
-        # the numeric character.
-        sequence = [sequence[i:i + 2] for i in range(0, len(sequence), 2)]
-        for pair in sequence:
-            # Usage of str.isdigit() to determine whether or not the
-            # character is convertible, otherwise assigning None via
-            # a ternary operator (?)
-            numeric = int(pair[-1]) if pair[-1].isdigit() else None
-            # Removes used entries. If numeric is None, then nothing
-            # happens, so an if-statement is not necessary
-            unused_numbers.remove(numeric)
+    for word in equation:
+        for char in word:
+            # Checks whether or not a numerical character has been removed
+            # from the unused_numbers list
+            if char.isdigit() and int(char) in unused_numbers:
+                unused_numbers.remove(int(char))
     return unused_numbers
 
 
 def replace(equation, number):
     """Replace some character in equations with a number.
+
     :param equation: list of strings
     :param number: int
     :returns: list
     """
     for word in equation:
         # Going from the last character of the first word and going from there
-        chars = reversed(list(word))
+        chars = list(reversed(list(word)))
         for char in chars:
             if char.isalpha():
                 return list(map(lambda x: x.replace(char, str(number)), equation))
@@ -120,16 +111,63 @@ def accept(equation):
 
 def reject(equation):
     """Reject possible solutions based upon how well the first several
-    characters fit into the model."""
-    numeric = []
-    for word in equation:
-        numeric = [int(x) for x in word if x.isdigit()]
-    return (sum(numeric[:-1]) == numeric[-1])
+    characters fit into the model.
+
+    :param equation: list of strings
+    :returns: bool
+    """
+    # check contains the numerical data found in the string
+    check = []
+
+    # construct is used to reconstruct the numeral in string
+    # form, to allow for a later conversion
+    construct = ""
+
+    # For all of the words in the list leading up to the last one,
+    # take each character, check if it's numerical, and if it is,
+    # make it part of the constructor
+    # Only consecutive integers are allowed !!!
+    for word in equation[:-1]:
+        word = reversed(list(word))
+        for char in word:
+            # Usage of ternary to decide when to stop executing the
+            # loop
+            addendum = char if char.isdigit() else ""
+            if addendum == "":
+                break
+            # Reversed due to the order of iterating through
+            # characters
+            construct = addendum + construct
+        if construct != "":
+            # Only if something is added to the constructor,
+            # added to the checklist
+            check.append(construct)
+        # Reset the value for construct
+        construct = ""
+
+    # The next step is to find out the number of characters in the
+    # smallest string, and then check if the addition works purely
+    # for that. This way, one does not need to know anything else
+    # about the equation to check whether or not it works
+    nums_used = min(map(len, check))
+
+    # print(not (str(sum(check)) in equation[-1]))
 
 
 def solve(equation):
-    nums = guess(equation)
-    for number in 
+    """Using all of the functions implemented above, recursively replaces each
+    character with a numeral and checks whether or not the following equation 
+    is solvable.
+
+    :param equation: list of strings
+    :param rejected: dictionary
+    :returns: lists
+    """
+
+    replacement = guess(equation)[0]
+    new = replace(equation, replacement)
+    print(new)
+
 
 if __name__ == "__main__":
-    display(create("equations/00.txt"))
+    print(reject(["A567", "1E85", "PE652"]))
