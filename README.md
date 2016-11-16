@@ -15,7 +15,7 @@ Lab work for the Introduction to Computer Science class in New York University, 
 |  8      | Recursion                      |
 |  9      | Object oriented programming    |
 | 10      | Advanced OOP                   |
-| 11      | Processing                     |
+| 11      | Pygame                         |
 | 12      | Python with SQL                |
 | 13      | Web servers & CGI              |
 | 14      | Review & final                 | 
@@ -25,4 +25,5 @@ Lab work for the Introduction to Computer Science class in New York University, 
 
 - [Battleship: Rip current edition](https://github.com/lzapolskas/intro_to_cs/tree/master/battleships) An implementation of Battleships where the ships are thrown about by the current, making hitting them so much harder.
 - [Monopoly](https://github.com/lzapolskas/intro_to_cs/tree/master/monopoly) Text-based Monopoly clone. While the board itself is not rendered in glorious ASCII, the core functionality, that is movement, buying properties, rent and the like are in place.
+- [Verbal arithmetic](https://github.com/lzapolskas/intro_to_cs/tree/master/verbal) An attempted recursive solver for verbal arithmetic problems.
 - **Final project** Currently unknown
