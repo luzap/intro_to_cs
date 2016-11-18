@@ -32,12 +32,14 @@ class Particle:
 class Ship:
 
     def __init__(self):
-        self.image = pygame.image.load("space-ship.png").convert()
-        self.vel = vec2(vel_x, vel_y)
+        self.image = pygame.image.load("space-ship.png")
+        self.vel = vec2(5, 0)
 
         self.color = (randint(0, 255), randint(0, 255), randint(0, 255))
 
-        self.rect = pygame.Rect(vec2(x, y), (self.image.width, self.image.height))
+        self.rect = pygame.Rect(
+            vec2(display.get_width() / 2, display.get_height() * 0.8),
+            (self.image.get_width(), self.image.get_height()))
 
     def move_left(self):
         if not (self.rect.left < 0):
@@ -48,18 +50,30 @@ class Ship:
             self.rect.move_ip(self.vel)
 
     def draw(self):
-        pygame.blit(self.image, (self.rect.x, self.rect.y))
+        display.blit(self.image, (self.rect.x, self.rect.y))
+
+    def shoot(self):
+        pass
 
 pygame.init()
 clock = pygame.time.Clock()
-font = pygame.font.font(None, 28)
+font = pygame.font.Font(None, 28)
+
+
+ship = Ship()
 
 
 def mainloop():
+    particles = []
     while True:
+        if randint(0, 100) > 90:
+            particles.append(Particle())
+
+        clock.tick(60)
+        display.fill((0, 0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return
+                sys.exit()
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
@@ -70,9 +84,25 @@ def mainloop():
         if keys[pygame.K_SPACE]:
             ship.shoot()
 
-def victory_screen():
-    pass
+        for particle in particles:
+            if ship.rect.colliderect(particle.rect):
+                return False
+            particle.move()
+            particle.draw()
+        ship.draw()
 
-while True:
-    mainloop()
-    victory_screen()
+        pygame.display.update()
+
+
+playing = mainloop()
+
+while not playing:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit()
+    clock.tick(60)
+    display.fill((0, 0, 0))
+    text = font.render("You lost!", True, (255, 255, 255))
+    display.blit(text, (display.get_width() / 2 - text.get_width() /
+                        2, display.get_height() / 2 - text.get_height() / 2))
+    pygame.display.update()
