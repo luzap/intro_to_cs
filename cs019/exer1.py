@@ -1,14 +1,13 @@
 """Exercise 1: Paddle ball."""
 
-# TODO Fix the tunnel effect or the way it plays with the score
-# TODO Find a good position for the score counter
 
 import sys
+import time
+from random import randint
+
 import pygame
 from pygame.math import Vector2 as vec2
-from pygame.math import Vector3 as vec3
-from random import randint
-from time import sleep
+
 
 display = pygame.display.set_mode((500, 600))
 pygame.display.set_caption("Paddle ball")
@@ -37,31 +36,28 @@ class BaseObject:
         if self.rect.colliderect(other.rect):
             # Check if the other rectangle is below
             if other.rect.y <= self.rect.y - self.rect.height / 2:
-                print("below")
                 return vec2(0, -1)
             # Check if the other rectangle is above
             if other.rect.y >= self.rect.y + self.rect.height / 2:
-                print("above")
                 return vec2(0, 1)
             # Check if the other rectangle is to the right
             if other.rect.x <= self.rect.x:
-                print("right")
                 return vec2(1, 0)
             # Check if the other rectangle is to the left
             if other.rect.x >= self.rect.x:
-                print("left")
                 return vec2(-1, 0)
 
 
 class Particle(BaseObject):
 
-    counter = 0
+    def __init__(self, x: int, y: int, x_dim: int, y_dim: int, vel_x=0, vel_y=0):
+        super().__init__(x, y, x_dim, y_dim, vel_x, vel_y)
+        self.collisions = []
 
     def move(self, other):
         """Move the particle."""
 
         normal = self.collide(other)
-
         if not normal:
             if (self.rect.left + self.vel.x < 0) or \
                     (self.rect.right + self.vel.x > display.get_width()):
@@ -69,25 +65,21 @@ class Particle(BaseObject):
                 self.vel.x *= -1
 
             if (self.rect.top + self.vel.y < 0):
-
                 self.vel.y *= -1
-
-            if (self.rect.bottom + self.vel.y > display.get_height()):
-                del self.rect
-                del self
-                return
-
         else:
-            print(self.vel)
+            self.collisions.append(time.time())
             self.vel.reflect_ip(normal)
-            print(self.vel)
-            if normal.x != 0:
-                self.vel += other.vel
-            print(self.vel)
             if isinstance(other, Slider):
                 Constants.counter += 1
 
         self.rect.move_ip(self.vel)
+
+        # Making sure that the sticking effect does not occur
+        # Probably not the best way to do it, but it works regardless
+        if len(self.collisions) >= 2:
+            if (self.collisions[-1] - self.collisions[-2]) < 0.5:
+                self.rect.move_ip((0, -self.rect.height / 2))
+                del self.collisions[-1]
 
 
 class Slider(BaseObject):
@@ -106,7 +98,7 @@ class Slider(BaseObject):
 particles = []
 particles.append(Particle(10, 10, 10, 10, 5, 5))
 slider = Slider(display.get_width() * 0.5 - 25,
-                display.get_height() * 0.85, 75, 10, vel_x=10)
+                display.get_height() * 0.85, 75, 9, vel_x=10)
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -149,5 +141,3 @@ while True:
 
     display.blit(text, (350, 50))
     pygame.display.update()
-
-
