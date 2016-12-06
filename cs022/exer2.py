@@ -1,4 +1,4 @@
-"""Exercise 1: Plotting with data."""
+"""Exercise 1.2: side by side bar graphs."""
 import csv
 from collections import OrderedDict
 
@@ -40,18 +40,26 @@ for row in columns:
     tips[row[0]].append(row[2])
 
 
-total = {key: round(np.mean(value), 2) for key, value in total.items()}
-tips = {key: round(np.mean(value), 2) for key, value in tips.items()}
+total_mean = {key: round(np.mean(value), 2)
+              for key, value in total.items()}
+total_std = {key: round(np.std(value), 2)
+             for key, value in total.items()}
+tips_mean = {key: round(np.mean(value), 2)
+             for key, value in tips.items()}
+tips_std = {key: round(np.std(value), 2)
+            for key, value in tips.items()}
 
-width = 0.25
+width = 0.30
+
 
 locs = np.arange(len(total))
-tot = plt.bar(locs, total.values(), width, color='r', )
-tips = plt.bar(locs, tips.values(), width, color='b', bottom=total.values())
+tot = plt.bar(locs, total_mean.values(), width, color='r', yerr=total_std.values())
+tips = plt.bar(locs + width, tips_mean.values(),
+               width, color='b', yerr=tips_std.values())
 
 plt.xlabel("Day")
 plt.ylabel("Average amount")
 plt.legend((tot[0], tips[0]), ("Total", "Tips"), loc='best')
 
-plt.xticks(locs + width / 2, total.keys())
+plt.xticks(locs + width, total.keys())
 plt.show()

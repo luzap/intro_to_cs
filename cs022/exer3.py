@@ -1,4 +1,4 @@
-"""Exercise 1: Plotting with data."""
+"""Exercise 1.3: contribution pie chart."""
 import csv
 from collections import OrderedDict
 
@@ -25,33 +25,19 @@ def get_data_dict(file):
 data = get_data_dict('tips.csv')
 
 columns = list(zip(data['day'], map(
-    float, data['total_bill']), map(float, data['tip'])))
+    float, data['total_bill'])))
 
-total = OrderedDict()
-tips = OrderedDict()
+total = {}
 
 for row in columns:
     if row[0] not in total:
         total[row[0]] = []
     total[row[0]].append(row[1])
 
-    if row[0] not in tips:
-        tips[row[0]] = []
-    tips[row[0]].append(row[2])
+for day in total:
+    total[day] = sum(total[day])
 
+plt.pie(list(total.values()), autopct='%1.1f%%', labels=total.keys())
+plt.axis('equal')
 
-total = {key: round(np.mean(value), 2) for key, value in total.items()}
-tips = {key: round(np.mean(value), 2) for key, value in tips.items()}
-
-width = 0.25
-
-locs = np.arange(len(total))
-tot = plt.bar(locs, total.values(), width, color='r', )
-tips = plt.bar(locs, tips.values(), width, color='b', bottom=total.values())
-
-plt.xlabel("Day")
-plt.ylabel("Average amount")
-plt.legend((tot[0], tips[0]), ("Total", "Tips"), loc='best')
-
-plt.xticks(locs + width / 2, total.keys())
 plt.show()
