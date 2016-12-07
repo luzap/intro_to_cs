@@ -38,7 +38,7 @@ def main():
 
     for row in nd_cal:
         html_cal += "<tr>\n"
-        for col in row:
+        for col in row:n
             html_cal += entry_string.format(
                 'style="background-color: yellow"' if int(
                     col) == date.day else "",
