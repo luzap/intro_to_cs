@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def main():
-    days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     date = datetime.datetime.now()
     _, last_day = monthrange(date.year, date.month)
     cal = [0] * 35
@@ -38,7 +38,7 @@ def main():
 
     for row in nd_cal:
         html_cal += "<tr>\n"
-        for col in row:n
+        for col in row:
             html_cal += entry_string.format(
                 'style="background-color: yellow"' if int(
                     col) == date.day else "",
