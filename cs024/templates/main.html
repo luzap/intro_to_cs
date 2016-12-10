@@ -1,0 +1,44 @@
+{% extends "base.html" %} {% block content %}
+<form action="/" method="POST" name="sort">
+    Show user:
+    <select name='user'>
+    <option value="All">All</option>
+    {% for user in users %}
+        <option value="{{user.user}}"> {{user.user}} </option>
+    
+    {% endfor %}
+</select>
+    <br>
+    <br> Show number of tweets: <br>
+    <input type="number" name="number">
+    <input type="submit" name="params" value="Submit">
+</form>
+<br>
+<br>
+<form action="/" method="POST" name="tweet">
+    Username:<br>
+    <input type="text" name="user"><br> Tweet:
+    <br>
+    <input type="text" name="tweet"><br>
+    <input type="submit" name="new" value="Submit">
+</form>
+<br>
+<table style="width:100%; border:1px solid black">
+    <tr>
+        <th style="border:1px solid black">Tweet id</th>
+        <th style="border:1px solid black">Username</th>
+        <th style="border:1px solid black">Tweet</th>
+        <th style="border:1px solid black">Timestamp</th>
+        <th style="border:1px solid black">Likes</th>
+    </tr>
+    {% for tweet in tweets %}
+    <tr>
+        <td style="border:1px solid black"><a href="{{ url_for("increment_likes", id=tweet.id)}}">Click here to like</a> </td>
+        <td style="border:1px solid black">{{ tweet.user }} </td>
+        <td style="border:1px solid black; max-width: 350px; word-wrap: break-word;">{{ tweet.message|truncate(140) }} </td>
+        <td style="border:1px solid black">{{ tweet.tstamp }}</td>
+        <td style="border:1px solid black">{{ tweet.likes }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock%}
