@@ -16,7 +16,6 @@ def exponentiate(base, power):
     """Recursively obtain the result of an exponentiation operation."""
     if power > 0:
         return base * exponentiate(base, power - 1)
-
     else:
         return 1
 
