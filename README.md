@@ -25,5 +25,4 @@ Lab work for the Introduction to Computer Science class in New York University, 
 
 - [Battleship: Rip current edition](https://github.com/lzapolskas/intro_to_cs/tree/master/battleships) An implementation of Battleships where the ships are thrown about by the current, making hitting them so much harder.
 - [Monopoly](https://github.com/lzapolskas/intro_to_cs/tree/master/monopoly) Text-based Monopoly clone. While the board itself is not rendered in glorious ASCII, the core functionality, that is movement, buying properties, rent and the like are in place.
-- [Verbal arithmetic](https://github.com/lzapolskas/intro_to_cs/tree/master/verbal) An attempted recursive solver for verbal arithmetic problems.
-- **Final project** Currently unknown
+- [Maze run](https://github.com/intro_to_cs/tree/master/maze_run) **Final project** A game made using the *pyglet* and *esper* modules. The player has to complete a randomly generated maze until the time runs out, and is then whisked away to the next random maze.
